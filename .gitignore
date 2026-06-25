@@ -1,0 +1,56 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyEnv and Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Local SQLite databases or log files
+*.log
+*.sqlite
+*.db
+
+# Data directories (we will auto-generate seeds)
+services/csv-drop/*.csv
+services/mock-saas-api/seed_contacts.json
+services/legacy-db/init.sql
+
+# Documentation folder (per user request)
+docs/

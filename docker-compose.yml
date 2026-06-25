@@ -1,0 +1,94 @@
+services:
+  # 1. Legacy CRM Database
+  legacy-db:
+    image: postgres:15-alpine
+    container_name: messydata-legacy-db
+    environment:
+      POSTGRES_DB: legacy_crm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - legacy_db_data:/var/lib/postgresql/data
+      - ./services/legacy-db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d legacy_crm"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Unified Data Store (Target Database)
+  unified-db:
+    image: postgres:15-alpine
+    container_name: messydata-unified-db
+    environment:
+      POSTGRES_DB: unified_crm
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - unified_db_data:/var/lib/postgresql/data
+      - ./services/unified-db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d unified_crm"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 3. Simulated SaaS REST API
+  mock-saas-api:
+    build:
+      context: ./services/mock-saas-api
+    container_name: messydata-mock-saas-api
+    ports:
+      - "8001:8001"
+    environment:
+      - PORT=8001
+      - HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 4. Unified API & Ingestion Engine
+  unified-api:
+    build:
+      context: ./services/unified-api
+    container_name: messydata-unified-api
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - LEGACY_DATABASE_URL=postgresql://postgres:postgres@legacy-db:5432/legacy_crm
+      - UNIFIED_DATABASE_URL=postgresql://postgres:postgres@unified-db:5432/unified_crm
+      - SAAS_API_URL=http://mock-saas-api:8001
+      - CSV_DROP_DIR=/csv-drop
+    volumes:
+      - ./services/csv-drop:/csv-drop:ro
+    depends_on:
+      legacy-db:
+        condition: service_healthy
+      unified-db:
+        condition: service_healthy
+      mock-saas-api:
+        condition: service_healthy
+
+  # 5. Observability Dashboard
+  dashboard:
+    build:
+      context: ./services/dashboard
+    container_name: messydata-dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://unified-api:8000
+    depends_on:
+      - unified-api
+
+volumes:
+  legacy_db_data:
+  unified_db_data:
