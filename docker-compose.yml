@@ -48,7 +48,7 @@ services:
       - PORT=8001
       - HOST=0.0.0.0
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8001/health')\""]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -59,7 +59,7 @@ services:
       context: ./services/unified-api
     container_name: messydata-unified-api
     ports:
-      - "8000:8000"
+      - "8002:8000"
     environment:
       - PORT=8000
       - HOST=0.0.0.0
