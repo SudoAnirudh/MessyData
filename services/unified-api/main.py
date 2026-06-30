@@ -13,8 +13,9 @@ from pipeline.runner import run_etl
 from pipeline.normalizer import normalize_name, normalize_email, normalize_phone, normalize_address
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("unified_api")
+from pipeline.logging_config import setup_logging
+logger = setup_logging("unified_api")
+
 
 # Database setup
 DATABASE_URL = os.getenv(

@@ -4,15 +4,12 @@ import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-)
-logger = logging.getLogger("pipeline_runner")
-
 # Add the parent directory to sys.path to resolve imports correctly
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from pipeline.logging_config import setup_logging
+logger = setup_logging("pipeline_runner")
+
 
 from pipeline.connectors.legacy_db import LegacyDBConnector
 from pipeline.connectors.saas_api import SaaSAPIConnector
