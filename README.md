@@ -182,18 +182,3 @@ Navigate to **`http://localhost:8501`** in your browser to:
 3. **Resolve Conflicts**: Open the *Flagged Duplicates Review* tab to merge records or split profiles side-by-side.
 
 ---
-
-## 7. Implementation Roadmap
-
-- [x] **Phase 1: Foundations**
-  * Set up Docker Compose networks, PostgreSQL instances, and mock data generators.
-- [x] **Phase 2: Source Connectors**
-  * Build database, REST API, and encoding-safe CSV extractors.
-- [x] **Phase 3: Reconciliation Engine**
-  * Implement fuzzy matching thresholds, name/email normalization, and idempotent database loading.
-- [x] **Phase 4: Unified API Layer**
-  * Construct FastAPI endpoints to expose unified records and pipeline histories.
-- [x] **Phase 5: Observability Dashboard**
-  * Build Streamlit dashboard showcasing run trends, dedup statistics, and flagged review records.
-- [x] **Phase 6: Final Polish & CI/CD**
-  * Integrate GitHub Actions workflow tests and finalize container health checks.
