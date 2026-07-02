@@ -81,14 +81,6 @@ MessyData/
 │       └── ci.yml                     # GitHub Actions CI workflow config
 ├── docker-compose.yml                 # Orchestrates all multi-container services
 ├── README.md                          # [THIS FILE] Project overview & documentation
-├── docs/                              # Project design docs and guides (not committed)
-│   ├── MessyData_PRD.txt
-│   ├── phase1_explanation.md
-│   ├── phase2_explanation.md
-│   ├── phase3_explanation.md
-│   ├── phase4_explanation.md
-│   ├── phase5_explanation.md
-│   └── resume_bullets.md              # Metrics-driven FDE resume points
 ├── scripts/
 │   ├── generate_messy_data.py         # Mock data generator and corrupter
 │   └── verify_extraction.py           # Verification script for extraction connectors
