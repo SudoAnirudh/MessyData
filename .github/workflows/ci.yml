@@ -1,0 +1,62 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Generate Messy Data Seeds
+      run: |
+        python scripts/generate_messy_data.py
+
+    - name: Install dependencies on host
+      run: |
+        pip install --upgrade pip
+        pip install -r services/unified-api/requirements.txt
+
+    - name: Run unit tests on host
+      run: |
+        python -m unittest discover -s services/unified-api/tests -p "test_*.py"
+
+    - name: Build and spin up container stack
+      run: |
+        docker compose up --build -d
+
+    - name: Wait for containers to be healthy
+      run: |
+        # Wait up to 60 seconds for all services to be running and healthy
+        for i in {1..12}; do
+          echo "Checking container status..."
+          docker compose ps
+          # Ensure healthy status or running status for critical services
+          if [ "$(docker compose ps --filter status=running -q | wc -l)" -eq 5 ]; then
+            echo "All 5 containers are running!"
+            # Add a brief sleep to ensure database socket binding is ready
+            sleep 5
+            break
+          fi
+          sleep 5
+        done
+
+    - name: Run integration and connector verification
+      run: |
+        python scripts/verify_extraction.py
+
+    - name: Tear down container stack
+      if: always()
+      run: |
+        docker compose down -v
